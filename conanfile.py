@@ -37,7 +37,7 @@ class LibnameConan(ConanFile):
             else:
                 args.extend(['--disable-shared', '--enable-static'])
             env_build = AutoToolsBuildEnvironment(self)
-            env_build.configure(args=args)
+            env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
             env_build.make(args=['install'])
 
