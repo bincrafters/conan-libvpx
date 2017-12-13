@@ -38,6 +38,30 @@ class LibnameConan(ConanFile):
                 args.extend(['--disable-shared', '--enable-static'])
             if self.settings.build_type == "Debug":
                 args.append('--enable-debug')
+
+            arch = {'x86': 'x86',
+                    'x86_64': 'x86_64',
+                    'armv7': 'armv7',
+                    'armv8': 'arm64',
+                    'mips': 'mips32',
+                    'mips64': 'mips64',
+                    'sparc': 'sparc'}.get(str(self.settings.arch))
+            if self.settings.compiler == 'Visual Studio':
+                compiler = 'vs' + str(self.settings.compiler.version)
+            else:
+                compiler = 'gcc'
+            if self.settings.os == 'Windows':
+                os_name = 'win32' if self.settings.arch == 'x86' else 'win64'
+            elif str(self.settings.os) in ['Macos', 'iOS', 'watchOS', 'tvOS']:
+                os_name = 'darwin8'
+            elif self.settings.os == 'Linux':
+                os_name = 'linux'
+            elif self.settings.os == 'Solaris':
+                os_name = 'solaris'
+            elif self.settings.os == 'Android':
+                os_name = 'android'
+            target = "%s-%s-%s" % (arch, os_name, compiler)
+            args.append('--target=%s' % target)
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
