@@ -36,6 +36,8 @@ class LibnameConan(ConanFile):
                 args.extend(['--disable-static', '--enable-shared'])
             else:
                 args.extend(['--disable-shared', '--enable-static'])
+            if self.settings.build_type == "Debug":
+                args.append('--enable-debug')
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
