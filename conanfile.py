@@ -13,8 +13,8 @@ class LibnameConan(ConanFile):
     license = "https://github.com/webmproject/libvpx/blob/master/LICENSE"
     exports_sources = ["CMakeLists.txt", "LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = "shared=False", "fPIC=True"
 
     def build_requirements(self):
         self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/stable")
@@ -36,6 +36,8 @@ class LibnameConan(ConanFile):
                 args.extend(['--disable-static', '--enable-shared'])
             else:
                 args.extend(['--disable-shared', '--enable-static'])
+            if self.options.fPIC:
+                args.append('--enable-pic')
             if self.settings.build_type == "Debug":
                 args.append('--enable-debug')
 
