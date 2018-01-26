@@ -26,8 +26,21 @@ class LibnameConan(ConanFile):
         os.rename(extracted_dir, "sources")
 
     def build(self):
+        if self.settings.os == 'Windows':
+            cygwin_bin = self.deps_env_info['cygwin_installer'].CYGWIN_BIN
+            with tools.environment_append({'PATH': [cygwin_bin],
+                                           'CONAN_BASH_PATH': os.path.join(cygwin_bin, 'bash.exe')}):
+                self.build_configure()
+        else:
+            self.build_configure()
+
+    def build_configure(self):
         with tools.chdir('sources'):
-            args = ['--prefix=%s' % self.package_folder,
+            win_bash = self.settings.os == 'Windows'
+            prefix = os.path.abspath(self.package_folder)
+            if self.settings.os == 'Windows':
+                prefix = tools.unix_path(prefix, tools.CYGWIN)
+            args = ['--prefix=%s' % prefix,
                     '--disable-examples',
                     '--disable-unit-tests',
                     '--enable-vp9-highbitdepth',
@@ -64,7 +77,7 @@ class LibnameConan(ConanFile):
                 os_name = 'android'
             target = "%s-%s-%s" % (arch, os_name, compiler)
             args.append('--target=%s' % target)
-            env_build = AutoToolsBuildEnvironment(self)
+            env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
             env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
             env_build.make(args=['install'])
