@@ -17,6 +17,9 @@ class LibVPXConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
 
+    def configure(self):
+        del self.settings.compiler.libcxx
+
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
@@ -32,7 +35,11 @@ class LibVPXConan(ConanFile):
             cygwin_bin = self.deps_env_info['cygwin_installer'].CYGWIN_BIN
             with tools.environment_append({'PATH': [cygwin_bin],
                                            'CONAN_BASH_PATH': os.path.join(cygwin_bin, 'bash.exe')}):
-                self.build_configure()
+                if self.settings.compiler == 'Visual Studio':
+                    with tools.vcvars(self.settings, filter_known_paths=False):
+                        self.build_configure()
+                else:
+                    self.build_configure()
         else:
             self.build_configure()
 
