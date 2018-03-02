@@ -9,6 +9,7 @@ class LibnameConan(ConanFile):
     name = "libvpx"
     version = "1.6.1"
     url = "https://github.com/bincrafters/conan-libvpx"
+    homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
     license = "https://github.com/webmproject/libvpx/blob/master/LICENSE"
     exports_sources = ["CMakeLists.txt", "LICENSE"]
