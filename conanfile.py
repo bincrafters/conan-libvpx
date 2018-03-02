@@ -7,7 +7,7 @@ import os
 
 class LibVPXConan(ConanFile):
     name = "libvpx"
-    version = "1.6.1"
+    version = "1.7.0"
     url = "https://github.com/bincrafters/conan-libvpx"
     homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
