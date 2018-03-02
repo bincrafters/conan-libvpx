@@ -85,7 +85,7 @@ class LibVPXConan(ConanFile):
             env_build.make(args=['install'])
 
     def package(self):
-        self.copy(pattern="LICENSE", src='sources')
+        self.copy(pattern="LICENSE", src='sources', dst='licenses')
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
