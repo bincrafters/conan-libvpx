@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/bincrafters/conan-libvpx.svg?branch=testing%2F1.6.1)](https://travis-ci.org/bincrafters/conan-libvpx)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-libvpx?branch=testing%2F1.6.1&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-libvpx)
 
-[Conan.io](https://conan.io) package recipe for *libvpx*.
+[Conan.io](https://conan.io) package recipe for [*libvpx*](https://www.webmproject.org/code).
 
 WebM VP8/VP9 Codec SDK
 
@@ -42,8 +42,8 @@ The following command both runs all the steps of the conan file, and publishes t
 ### Available Options
 | Option        | Default | Possible Values  |
 | ------------- |:----------------- |:------------:|
-| shared      | False |  [True, False] |
 | fPIC      | True |  [True, False] |
+| shared      | False |  [True, False] |
 
 ## Add Remote
 
@@ -59,4 +59,4 @@ The following command both runs all the steps of the conan file, and publishes t
 NOTE: The conan recipe license applies only to the files of this recipe, which can be used to build and package libvpx.
 It does *not* in any way apply or is related to the actual software being packaged.
 
-[MIT](https://github.com/bincrafters/conan-libvpx.git/blob/testing/1.6.1/LICENSE.md)
+[MIT](https://github.com/bincrafters/conan-libvpx.git/blob/testing/1.6.1/LICENSE)
