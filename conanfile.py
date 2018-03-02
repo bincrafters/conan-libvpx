@@ -5,7 +5,7 @@ from conans import ConanFile, AutoToolsBuildEnvironment, tools
 import os
 
 
-class LibnameConan(ConanFile):
+class LibVPXConan(ConanFile):
     name = "libvpx"
     version = "1.6.1"
     url = "https://github.com/bincrafters/conan-libvpx"
