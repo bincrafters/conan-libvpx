@@ -16,6 +16,10 @@ class LibnameConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
 
+    def config_options(self):
+        if self.settings.os == 'Windows':
+            del self.options.fPIC
+
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
         tools.get(source_url)
@@ -46,7 +50,7 @@ class LibnameConan(ConanFile):
                 args.extend(['--disable-static', '--enable-shared'])
             else:
                 args.extend(['--disable-shared', '--enable-static'])
-            if self.options.fPIC:
+            if self.settings.os != 'Windows' and self.options.fPIC:
                 args.append('--enable-pic')
             if self.settings.build_type == "Debug":
                 args.append('--enable-debug')
