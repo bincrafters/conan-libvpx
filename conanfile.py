@@ -16,9 +16,6 @@ class LibnameConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
 
-    def build_requirements(self):
-        self.build_requires("yasm_installer/[>=1.3.0]@bincrafters/stable")
-
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
         tools.get(source_url)
