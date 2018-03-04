@@ -62,6 +62,9 @@ class LibVPXConan(ConanFile):
                 args.append('--enable-pic')
             if self.settings.build_type == "Debug":
                 args.append('--enable-debug')
+            if self.settings.compiler == 'Visual Studio':
+                if 'MT' in str(self.settings.compiler.runtime):
+                    args.append('--enable-static-msvcrt')
 
             arch = {'x86': 'x86',
                     'x86_64': 'x86_64',
@@ -95,4 +98,11 @@ class LibVPXConan(ConanFile):
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        if self.settings.os == 'Windows':
+            self.cpp_info.libs = ['vpxmt' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd']
+            if self.settings.arch == 'x86_64':
+                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'x64'))
+            elif self.settings.arch == 'x86':
+                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'Win32'))
+        else:
+            self.cpp_info.libs = ['vpx']
