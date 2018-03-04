@@ -92,6 +92,9 @@ class LibVPXConan(ConanFile):
                 os_name = 'android'
             target = "%s-%s-%s" % (arch, os_name, compiler)
             args.append('--target=%s' % target)
+            if self.settings.compiler == 'apple-clang':
+                if float(str(self.settings.compiler.version)) < 8.0:
+                    args.append('--disable-avx512')
             env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
             env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
