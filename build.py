@@ -18,4 +18,11 @@ if __name__ == "__main__":
                 installers.append("mingw_installer/1.0@conan/stable")
         build_requires.update({"*": installers})
 
+    items = []
+    for item in builder.items:
+        # do not use windows shared builds
+        if not (item.settings["compiler"] == "Visual Studio" and item.options.get("libvpx:shared", False)):
+            items.append(item)
+    builder.items = items
+
     builder.run()

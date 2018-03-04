@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans.errors import ConanException
 import os
 
 
@@ -19,6 +20,8 @@ class LibVPXConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        if self.settings.os == 'Windows' and self.options.shared:
+            raise ConanException('Windows shared builds are not supported')
 
     def config_options(self):
         if self.settings.os == 'Windows':
