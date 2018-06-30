@@ -49,6 +49,10 @@ class LibVPXConan(ConanFile):
 
     def build_configure(self):
         with tools.chdir('sources'):
+            if self.settings.compiler == 'Visual Studio':
+                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                                      '        --help|-h) show_help',
+                                      '        --help|-h) show_help\n        ;;\n        -O*) echo "ignoring -O..."\n')
             win_bash = self.settings.os == 'Windows'
             prefix = os.path.abspath(self.package_folder)
             if self.settings.os == 'Windows':
