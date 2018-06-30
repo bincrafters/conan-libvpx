@@ -4,6 +4,7 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 from conans.errors import ConanException
 import os
+import shutil
 
 
 class LibVPXConan(ConanFile):
@@ -105,10 +106,10 @@ class LibVPXConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == 'Windows':
-            self.cpp_info.libs = ['vpxmt' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd']
+            name = 'vpxmt.lib' if self.options.shared else 'vpxmd.lib'
             if self.settings.arch == 'x86_64':
-                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'x64'))
+                libdir = os.path.join(self.package_folder, 'lib', 'x64')
             elif self.settings.arch == 'x86':
-                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'Win32'))
-        else:
-            self.cpp_info.libs = ['vpx']
+                libdir = os.path.join(self.package_folder, 'lib', 'Win32')
+            shutil.move(os.path.join(libdir, name), os.path.join(self.package_folder, 'lib', 'vpx.lib'))
+        self.cpp_info.libs = ['vpx']
