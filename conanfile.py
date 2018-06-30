@@ -113,7 +113,7 @@ class LibVPXConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == 'Windows':
-            name = 'vpxmt.lib' if self.options.shared else 'vpxmd.lib'
+            name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
             if self.settings.arch == 'x86_64':
                 libdir = os.path.join(self.package_folder, 'lib', 'x64')
             elif self.settings.arch == 'x86':
