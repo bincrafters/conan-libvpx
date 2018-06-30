@@ -110,8 +110,6 @@ class LibVPXConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
-
-    def package_info(self):
         if self.settings.os == 'Windows':
             name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
             if self.settings.arch == 'x86_64':
@@ -119,4 +117,6 @@ class LibVPXConan(ConanFile):
             elif self.settings.arch == 'x86':
                 libdir = os.path.join(self.package_folder, 'lib', 'Win32')
             shutil.move(os.path.join(libdir, name), os.path.join(self.package_folder, 'lib', 'vpx.lib'))
+
+    def package_info(self):
         self.cpp_info.libs = ['vpx']
