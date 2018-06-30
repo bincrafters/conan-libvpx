@@ -53,6 +53,9 @@ class LibVPXConan(ConanFile):
                 tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
                                       '        --help|-h) show_help',
                                       '        --help|-h) show_help\n        ;;\n        -O*) echo "ignoring -O..."\n')
+                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                                      '        --help|-h) show_help',
+                                      '        --help|-h) show_help\n        ;;\n        -Zi) echo "ignoring -Zi..."\n')
             win_bash = self.settings.os == 'Windows'
             prefix = os.path.abspath(self.package_folder)
             if self.settings.os == 'Windows':
