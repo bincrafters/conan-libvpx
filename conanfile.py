@@ -4,6 +4,7 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 from conans.errors import ConanException
 import os
+import shutil
 
 
 class LibVPXConan(ConanFile):
@@ -48,6 +49,13 @@ class LibVPXConan(ConanFile):
 
     def build_configure(self):
         with tools.chdir('sources'):
+            if self.settings.compiler == 'Visual Studio':
+                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                                      '        --help|-h) show_help',
+                                      '        --help|-h) show_help\n        ;;\n        -O*) echo "ignoring -O..."\n')
+                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                                      '        --help|-h) show_help',
+                                      '        --help|-h) show_help\n        ;;\n        -Zi) echo "ignoring -Zi..."\n')
             win_bash = self.settings.os == 'Windows'
             prefix = os.path.abspath(self.package_folder)
             if self.settings.os == 'Windows':
@@ -102,13 +110,13 @@ class LibVPXConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
+        if self.settings.os == 'Windows':
+            name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
+            if self.settings.arch == 'x86_64':
+                libdir = os.path.join(self.package_folder, 'lib', 'x64')
+            elif self.settings.arch == 'x86':
+                libdir = os.path.join(self.package_folder, 'lib', 'Win32')
+            shutil.move(os.path.join(libdir, name), os.path.join(self.package_folder, 'lib', 'vpx.lib'))
 
     def package_info(self):
-        if self.settings.os == 'Windows':
-            self.cpp_info.libs = ['vpxmt' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd']
-            if self.settings.arch == 'x86_64':
-                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'x64'))
-            elif self.settings.arch == 'x86':
-                self.cpp_info.libdirs.append(os.path.join(self.package_folder, 'lib', 'Win32'))
-        else:
-            self.cpp_info.libs = ['vpx']
+        self.cpp_info.libs = ['vpx']
