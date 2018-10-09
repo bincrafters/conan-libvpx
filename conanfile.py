@@ -50,12 +50,19 @@ class LibVPXConan(ConanFile):
     def build_configure(self):
         with tools.chdir('sources'):
             if self.settings.compiler == 'Visual Studio':
-                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                gen = os.path.join('build', 'make', 'gen_msvs_vcxproj.sh')
+                tools.replace_in_file(gen,
                                       '        --help|-h) show_help',
                                       '        --help|-h) show_help\n        ;;\n        -O*) echo "ignoring -O..."\n')
-                tools.replace_in_file(os.path.join('build', 'make', 'gen_msvs_vcxproj.sh'),
+                tools.replace_in_file(gen,
                                       '        --help|-h) show_help',
                                       '        --help|-h) show_help\n        ;;\n        -Zi) echo "ignoring -Zi..."\n')
+                # disable warning:
+                # vpx.lib(vpx_src_vpx_image.obj) : MSIL .netmodule or module compiled with /GL found; restarting link
+                # with /LTCG; add /LTCG to the link command line to improve linker performance
+                tools.replace_in_file(gen,
+                                      'tag_content WholeProgramOptimization true',
+                                      'tag_content WholeProgramOptimization false')
             win_bash = self.settings.os == 'Windows'
             prefix = os.path.abspath(self.package_folder)
             if self.settings.os == 'Windows':
