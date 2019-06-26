@@ -15,7 +15,7 @@ class LibVPXConan(ConanFile):
     description = "WebM VP8/VP9 Codec SDK"
     license = "BSD-3-Clause"
     author = "Bincrafters <bincrafters@gmail.com>"
-    topics = "multimedia", "video", "libvpx", "vp9", "encoder", "decoder", "encoding", "decoding"
+    topics = ("conan", "libvpx", "multimedia", "video", "vp9", "encoder", "decoder", "encoding", "decoding")
     exports_sources = ["CMakeLists.txt", "LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
