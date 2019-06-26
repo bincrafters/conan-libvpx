@@ -36,7 +36,7 @@ class LibVPXConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
-        # Allow vs 2016
+        # Allow vs 2019
         tools.replace_in_file(os.path.join("sources", 'configure'),'all_platforms="${all_platforms} x86_64-win64-vs15"',
         'all_platforms=\"${all_platforms} x86_64-win64-vs15\"\nall_platforms="${all_platforms} x86_64-win64-vs16"')
 
@@ -51,10 +51,21 @@ class LibVPXConan(ConanFile):
             if [ "$vs_ver" = "16" ]; then
                 tag_content PlatformToolset v142
             fi''')
+        tools.replace_in_file(os.path.join("sources", 'build', 'make', 'gen_msvs_sln.sh'),
+'''15) sln_vers="12.00"
+       sln_vers_str="Visual Studio 2017"
+    ;;''', '''15) sln_vers="12.00"
+       sln_vers_str="Visual Studio 2017"
+    ;;
+    16) sln_vers="12.00"
+       sln_vers_str="Visual Studio 2019"
+    ;;''')
 
     def build_requirements(self):
         # useful for example for conditional build_requires
         # This means, if we are running on a Windows machine, require ToolWin
+        self.build_requires("yasm_installer/1.3.0@bincrafters/stable")
+
         if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
             self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
@@ -135,6 +146,7 @@ class LibVPXConan(ConanFile):
                 if float(str(self.settings.compiler.version)) < 8.0:
                     args.append('--disable-avx512')
             env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
+            env_build.flags = []
             env_build.configure(args=args, host=False, build=False, target=False)
             env_build.make()
             env_build.make(args=['install'])
