@@ -9,15 +9,17 @@ import shutil
 
 class LibVPXConan(ConanFile):
     name = "libvpx"
-    version = "1.7.0"
+    version = "1.8.0"
     url = "https://github.com/bincrafters/conan-libvpx"
     homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
-    license = "https://github.com/webmproject/libvpx/blob/master/LICENSE"
+    license = "BSD-3-Clause"
+    author = "Bincrafters <bincrafters@gmail.com>"
+    topics = "multimedia", "video", "libvpx", "vp9", "encoder", "decoder", "encoding", "decoding"
     exports_sources = ["CMakeLists.txt", "LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = "shared=False", "fPIC=True"
+    default_options = {'shared': False, 'fPIC': True}
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -30,9 +32,31 @@ class LibVPXConan(ConanFile):
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
-        tools.get(source_url)
+        tools.get(source_url,sha256="86df18c694e1c06cc8f83d2d816e9270747a0ce6abe316e93a4f4095689373f6")
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
+
+        # Allow vs 2016
+        tools.replace_in_file(os.path.join("sources", 'configure'),'all_platforms="${all_platforms} x86_64-win64-vs15"',
+        'all_platforms=\"${all_platforms} x86_64-win64-vs15\"\nall_platforms="${all_platforms} x86_64-win64-vs16"')
+
+        tools.replace_in_file(os.path.join("sources", 'build', 'make', 'gen_msvs_vcxproj.sh'),'10|11|12|14|15', '10|11|12|14|15|16')
+        tools.replace_in_file(os.path.join("sources", 'build', 'make', 'gen_msvs_sln.sh'),'10|11|12|14|15', '10|11|12|14|15|16')
+        tools.replace_in_file(os.path.join("sources", 'build', 'make', 'gen_msvs_vcxproj.sh'),
+'''if [ "$vs_ver" = "15" ]; then
+                tag_content PlatformToolset v141
+            fi''', '''if [ "$vs_ver" = "15" ]; then
+                tag_content PlatformToolset v141
+            fi
+            if [ "$vs_ver" = "16" ]; then
+                tag_content PlatformToolset v142
+            fi''')
+
+    def build_requirements(self):
+        # useful for example for conditional build_requires
+        # This means, if we are running on a Windows machine, require ToolWin
+        if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
+            self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
     def build(self):
         if self.settings.os == 'Windows':
