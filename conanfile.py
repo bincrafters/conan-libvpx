@@ -11,8 +11,10 @@ class LibVPXConan(ConanFile):
     name = "libvpx"
     version = "1.7.0"
     url = "https://github.com/bincrafters/conan-libvpx"
+    author = "bincrafters <bincrafters@gmail.com>"
     homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
+    topics = "conan", "vpx", "codec", "web", "VP8", "VP9",
     license = "https://github.com/webmproject/libvpx/blob/master/LICENSE"
     exports_sources = ["CMakeLists.txt", "LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
@@ -30,7 +32,7 @@ class LibVPXConan(ConanFile):
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
-        tools.get(source_url)
+        tools.get(source_url, sha256="1fec931eb5c94279ad219a5b6e0202358e94a93a90cfb1603578c326abfc1238")
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
