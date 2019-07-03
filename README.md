@@ -1,5 +1,5 @@
 [![Download](https://api.bintray.com/packages/bincrafters/public-conan/libvpx%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/libvpx%3Abincrafters/_latestVersion)
-[![Build Status](https://travis-ci.org/bincrafters/conan-libvpx.svg?branch=testing%2F1.6.1)](https://travis-ci.org/bincrafters/conan-libvpx)
+[![Build Status](https://travis-ci.com/bincrafters/conan-libvpx.svg?branch=testing%2F1.6.1)](https://travis-ci.com/bincrafters/conan-libvpx)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-libvpx?branch=testing%2F1.6.1&svg=true)](https://ci.appveyor.com/project/bincrafters/conan-libvpx)
 
 [Conan.io](https://conan.io) package recipe for [*libvpx*](https://www.webmproject.org/code).

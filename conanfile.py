@@ -17,7 +17,7 @@ class LibVPXConan(ConanFile):
     exports_sources = ["CMakeLists.txt", "LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = "shared=False", "fPIC=True"
+    default_options = {'shared': False, 'fPIC': True}
 
     def configure(self):
         del self.settings.compiler.libcxx
