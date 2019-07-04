@@ -9,7 +9,7 @@ import shutil
 
 class LibVPXConan(ConanFile):
     name = "libvpx"
-    version = "1.7.0"
+    version = "1.8.0"
     url = "https://github.com/bincrafters/conan-libvpx"
     author = "bincrafters <bincrafters@gmail.com>"
     homepage = "https://www.webmproject.org/code"
