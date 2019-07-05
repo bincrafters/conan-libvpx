@@ -32,7 +32,7 @@ class LibVPXConan(ConanFile):
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
-        tools.get(source_url, sha256="1fec931eb5c94279ad219a5b6e0202358e94a93a90cfb1603578c326abfc1238")
+        tools.get(source_url, sha256="86df18c694e1c06cc8f83d2d816e9270747a0ce6abe316e93a4f4095689373f6")
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, "sources")
 
