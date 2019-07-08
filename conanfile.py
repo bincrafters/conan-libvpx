@@ -37,20 +37,7 @@ class LibVPXConan(ConanFile):
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
-    def build(self):
-        if self.settings.os == 'Windows':
-            cygwin_bin = self.deps_env_info['cygwin_installer'].CYGWIN_BIN
-            with tools.environment_append({'PATH': [cygwin_bin],
-                                           'CONAN_BASH_PATH': os.path.join(cygwin_bin, 'bash.exe')}):
-                if self.settings.compiler == 'Visual Studio':
-                    with tools.vcvars(self.settings, filter_known_paths=False):
-                        self.build_configure()
-                else:
-                    self.build_configure()
-        else:
-            self.build_configure()
-
-    def build_configure(self):
+    def _fix_sources(self):
         if self.settings.compiler == 'Visual Studio':
             gen = os.path.join(self._source_subfolder, 'build', 'make', 'gen_msvs_vcxproj.sh')
             tools.replace_in_file(gen,
@@ -65,6 +52,8 @@ class LibVPXConan(ConanFile):
             tools.replace_in_file(gen,
                                   'tag_content WholeProgramOptimization true',
                                   'tag_content WholeProgramOptimization false')
+
+    def _configure_autotools(self):
         win_bash = tools.os_info.is_windows
         prefix = os.path.abspath(self.package_folder)
         if self.settings.os == 'Windows':
@@ -114,10 +103,26 @@ class LibVPXConan(ConanFile):
                 args.append('--disable-avx512')
         env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
         env_build.configure(args=args, configure_dir=self._source_subfolder, host=False, build=False, target=False)
+        return env_build
+
+    def build(self):
+        if self.settings.os == 'Windows':
+            cygwin_bin = self.deps_env_info['cygwin_installer'].CYGWIN_BIN
+            with tools.environment_append({'PATH': [cygwin_bin],
+                                           'CONAN_BASH_PATH': os.path.join(cygwin_bin, 'bash.exe')}):
+                if self.settings.compiler == 'Visual Studio':
+                    with tools.vcvars(self.settings, filter_known_paths=False):
+                        env_build = self._configure_autotools()
+                else:
+                    env_build = self._configure_autotools()
+        else:
+            env_build = self._configure_autotools()
         env_build.make()
-        env_build.install()
 
     def package(self):
+        env_build = self._configure_autotools()
+        env_build.install()
+
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
         if self.settings.os == 'Windows':
             name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
@@ -126,6 +131,7 @@ class LibVPXConan(ConanFile):
             elif self.settings.arch == 'x86':
                 libdir = os.path.join(self.package_folder, 'lib', 'Win32')
             shutil.move(os.path.join(libdir, name), os.path.join(self.package_folder, 'lib', 'vpx.lib'))
+        shutil.rmtree(os.path.join(self.package_folder, 'lib', 'pkgconfig'))
 
     def package_info(self):
-        self.cpp_info.libs = ['vpx']
+        self.cpp_info.libs = tools.collect_libs(self)
