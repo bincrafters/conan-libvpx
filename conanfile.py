@@ -64,6 +64,13 @@ class LibVPXConan(ConanFile):
                               'tag_content WholeProgramOptimization true',
                               'tag_content WholeProgramOptimization false')
 
+        # Remove unused svc exports
+        # https://github.com/webmproject/libvpx/commit/8198750c1514f5190de988c1912730dd509cf180#diff-84ff6063a88f1185a7aa6adb51500286
+        tools.replace_in_file(os.path.join(self._source_subfolder, 'libs.mk'),
+                              'CODEC_EXPORTS-$(CONFIG_VP9_ENCODER) += vpx/exports_spatial_svc\n',
+                              '')
+        os.unlink(os.path.join(self._source_subfolder, 'vpx', 'exports_spatial_svc'))
+
         # Enable Visual Studio 2019
         conf = os.path.join(self._source_subfolder, 'configure')
         tools.replace_in_file(conf,
