@@ -20,6 +20,10 @@ class LibVPXConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
 
+    build_requires = (
+        'yasm_installer/1.3.0@bincrafters/stable',
+    )
+
     _source_subfolder = "source_subfolder"
 
     def configure(self):
