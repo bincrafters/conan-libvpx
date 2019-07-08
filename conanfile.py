@@ -65,7 +65,7 @@ class LibVPXConan(ConanFile):
             tools.replace_in_file(gen,
                                   'tag_content WholeProgramOptimization true',
                                   'tag_content WholeProgramOptimization false')
-        win_bash = self.settings.os == 'Windows'
+        win_bash = tools.os_info.is_windows
         prefix = os.path.abspath(self.package_folder)
         if self.settings.os == 'Windows':
             prefix = tools.unix_path(prefix, tools.CYGWIN)
@@ -115,7 +115,7 @@ class LibVPXConan(ConanFile):
         env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
         env_build.configure(args=args, configure_dir=self._source_subfolder, host=False, build=False, target=False)
         env_build.make()
-        env_build.make(args=['install'])
+        env_build.install()
 
     def package(self):
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
