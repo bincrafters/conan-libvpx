@@ -158,8 +158,9 @@ class LibVPXConan(ConanFile):
             env_build.make()
 
     def package(self):
-        env_build = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
-        env_build.install()
+        with tools.chdir(self.build_folder):
+            env_build = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
+            env_build.install()
 
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
         if self.settings.os == 'Windows':
