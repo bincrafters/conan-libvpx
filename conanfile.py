@@ -65,10 +65,16 @@ class LibVPXConan(ConanFile):
                               'tag_content WholeProgramOptimization false')
 
         # Enable Visual Studio 2019
-        tools.replace_in_file(os.path.join(self._source_subfolder, 'configure',),
+        conf = os.path.join(self._source_subfolder, 'configure')
+        tools.replace_in_file(conf,
                               'all_platforms="${all_platforms} x86_64-win64-vs15"',
                               'all_platforms="${all_platforms} x86_64-win64-vs15"\n'
                               'all_platforms="${all_platforms} x86_64-win64-vs16"')
+        tools.replace_in_file(conf,
+                              'all_platforms="${all_platforms} x86-win32-vs15"',
+                              'all_platforms="${all_platforms} x86-win32-vs15"\n'
+                              'all_platforms="${all_platforms} x86-win32-vs16"')
+
         tools.replace_in_file(gen_vcxproj,
                               '10|11|12|14|15',
                               '10|11|12|14|15|16')
