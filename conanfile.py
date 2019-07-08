@@ -44,22 +44,58 @@ class LibVPXConan(ConanFile):
         os.rename(extracted_dir, self._source_subfolder)
 
     def _fix_sources(self):
-        gen = os.path.join(self._source_subfolder, 'build', 'make', 'gen_msvs_vcxproj.sh')
-        tools.replace_in_file(gen,
+        gen_vcxproj = os.path.join(self._source_subfolder, 'build', 'make', 'gen_msvs_vcxproj.sh')
+        tools.replace_in_file(gen_vcxproj,
                               '        --help|-h) show_help',
-                              '        --help|-h) show_help\n        ;;\n        -O*) echo "ignoring $opt..."\n')
-        tools.replace_in_file(gen,
+                              '        --help|-h) show_help\n        ;;\n'
+                              '        -O*) echo "ignoring $opt..."\n')
+        tools.replace_in_file(gen_vcxproj,
                               '        --help|-h) show_help',
-                              '        --help|-h) show_help\n        ;;\n        -Zi) echo "ignoring $opt..."\n')
-        tools.replace_in_file(gen,
+                              '        --help|-h) show_help\n        ;;\n'
+                              '        -Zi) echo "ignoring $opt..."\n')
+        tools.replace_in_file(gen_vcxproj,
                               '        --help|-h) show_help',
-                              '        --help|-h) show_help\n        ;;\n        -MD*|-MT*) echo "ignoring $opt (this option is already handled)"\n')
+                              '        --help|-h) show_help\n        ;;\n'
+                              '        -MD*|-MT*) echo "ignoring $opt (this option is already handled)"\n')
         # disable warning:
         # vpx.lib(vpx_src_vpx_image.obj) : MSIL .netmodule or module compiled with /GL found; restarting link
         # with /LTCG; add /LTCG to the link command line to improve linker performance
-        tools.replace_in_file(gen,
+        tools.replace_in_file(gen_vcxproj,
                               'tag_content WholeProgramOptimization true',
                               'tag_content WholeProgramOptimization false')
+
+        # Enable Visual Studio 2019
+        tools.replace_in_file(os.path.join(self._source_subfolder, 'configure',),
+                              'all_platforms="${all_platforms} x86_64-win64-vs15"',
+                              'all_platforms="${all_platforms} x86_64-win64-vs15"\n'
+                              'all_platforms="${all_platforms} x86_64-win64-vs16"')
+        tools.replace_in_file(gen_vcxproj,
+                              '10|11|12|14|15',
+                              '10|11|12|14|15|16')
+        tools.replace_in_file(gen_vcxproj,
+                              '            if [ "$vs_ver" = "15" ]; then\n'
+                              '                tag_content PlatformToolset v141\n'
+                              '            fi',
+                              '            if [ "$vs_ver" = "15" ]; then\n'
+                              '                tag_content PlatformToolset v141\n'
+                              '            fi\n'
+                              '            if [ "$vs_ver" = "16" ]; then\n'
+                              '                tag_content PlatformToolset v142\n'
+                              '            fi')
+        gen_sln = os.path.join(self._source_subfolder, 'build', 'make', 'gen_msvs_sln.sh')
+        tools.replace_in_file(gen_sln,
+                              '10|11|12|14|15',
+                              '10|11|12|14|15|16')
+        tools.replace_in_file(gen_sln,
+                              '    15) sln_vers="12.00"\n'
+                              '       sln_vers_str="Visual Studio 2017"\n'
+                              '    ;;',
+                              '    15) sln_vers="12.00"\n'
+                              '       sln_vers_str="Visual Studio 2017"\n'
+                              '    ;;\n'
+                              '    16) sln_vers="12.00"\n'
+                              '       sln_vers_str="Visual Studio 2019"\n'
+                              '    ;;')
 
     def _configure_autotools(self):
         win_bash = tools.os_info.is_windows
