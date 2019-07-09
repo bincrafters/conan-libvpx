@@ -147,7 +147,7 @@ class LibVPXConan(ConanFile):
         if self.settings.os == 'Windows':
             os_name = 'win32' if self.settings.arch == 'x86' else 'win64'
         elif str(self.settings.os) in ['Macos', 'iOS', 'watchOS', 'tvOS']:
-            os_name = 'darwin9'
+            os_name = 'darwin11'
         elif self.settings.os == 'Linux':
             os_name = 'linux'
         elif self.settings.os == 'Solaris':
