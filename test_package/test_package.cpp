@@ -1,6 +1,7 @@
+#include <vpx/vpx_codec.h>
+
 #include <cstdlib>
 #include <iostream>
-#include "vpx/vpx_codec.h"
 
 int main()
 {
