@@ -114,7 +114,7 @@ class LibVPXConan(ConanFile):
         win_bash = tools.os_info.is_windows
         prefix = os.path.abspath(self.package_folder)
         if self.settings.os == 'Windows':
-            prefix = tools.unix_path(prefix, tools.CYGWIN)
+            prefix = tools.unix_path(prefix)
         args = ['--prefix=%s' % prefix,
                 '--disable-examples',
                 '--disable-unit-tests',
@@ -176,7 +176,7 @@ class LibVPXConan(ConanFile):
             env_build.install()
 
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
-        if self.settings.os == 'Windows':
+        if self.settings.os == 'Windows' and self.settings.compiler == 'Visual Studio':
             name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
             if self.settings.arch == 'x86_64':
                 libdir = os.path.join(self.package_folder, 'lib', 'x64')
