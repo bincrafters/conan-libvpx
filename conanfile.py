@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 from conans.errors import ConanInvalidConfiguration
 import os
@@ -25,6 +23,7 @@ class LibVPXConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
         del self.settings.compiler.stdcpp
         if self.settings.os == 'Windows' and self.options.shared:
             raise ConanInvalidConfiguration('Windows shared builds are not supported')
@@ -34,7 +33,7 @@ class LibVPXConan(ConanFile):
             del self.options.fPIC
 
     def build_requirements(self):
-        self.build_requires('yasm_installer/1.3.0@bincrafters/stable')
+        self.build_requires('yasm/1.3.0')
         if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
             self.build_requires("msys2_installer/latest@bincrafters/stable")
 
