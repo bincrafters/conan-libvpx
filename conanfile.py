@@ -8,7 +8,6 @@ class LibVPXConan(ConanFile):
     name = "libvpx"
     version = "1.8.0"
     url = "https://github.com/bincrafters/conan-libvpx"
-    author = "Bincrafters <bincrafters@gmail.com>"
     homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
     topics = ("conan", "vpx", "codec", "web", "VP8", "VP9")
@@ -35,7 +34,7 @@ class LibVPXConan(ConanFile):
     def build_requirements(self):
         self.build_requires('yasm/1.3.0')
         if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
-            self.build_requires("msys2_installer/latest@bincrafters/stable")
+            self.build_requires("msys2/20161025")
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
