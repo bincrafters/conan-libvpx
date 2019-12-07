@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
-from conans.errors import ConanException
+from conans.errors import ConanInvalidConfiguration
 import os
 import shutil
 
@@ -10,7 +8,6 @@ class LibVPXConan(ConanFile):
     name = "libvpx"
     version = "1.8.0"
     url = "https://github.com/bincrafters/conan-libvpx"
-    author = "Bincrafters <bincrafters@gmail.com>"
     homepage = "https://www.webmproject.org/code"
     description = "WebM VP8/VP9 Codec SDK"
     topics = ("conan", "vpx", "codec", "web", "VP8", "VP9")
@@ -25,17 +22,19 @@ class LibVPXConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
+        del self.settings.compiler.stdcpp
         if self.settings.os == 'Windows' and self.options.shared:
-            raise ConanException('Windows shared builds are not supported')
+            raise ConanInvalidConfiguration('Windows shared builds are not supported')
 
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
     def build_requirements(self):
-        self.build_requires('yasm_installer/1.3.0@bincrafters/stable')
-        if tools.os_info.is_windows:
-            self.build_requires('msys2_installer/20161025@bincrafters/stable')
+        self.build_requires('yasm/1.3.0')
+        if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
+            self.build_requires("msys2/20161025")
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
@@ -113,8 +112,8 @@ class LibVPXConan(ConanFile):
     def _configure_autotools(self):
         win_bash = tools.os_info.is_windows
         prefix = os.path.abspath(self.package_folder)
-        if self.settings.os == 'Windows':
-            prefix = tools.unix_path(prefix, tools.CYGWIN)
+        if win_bash:
+            prefix = tools.unix_path(prefix)
         args = ['--prefix=%s' % prefix,
                 '--disable-examples',
                 '--disable-unit-tests',
@@ -140,33 +139,38 @@ class LibVPXConan(ConanFile):
                 'mips': 'mips32',
                 'mips64': 'mips64',
                 'sparc': 'sparc'}.get(str(self.settings.arch))
-        if self.settings.compiler == 'Visual Studio':
+        build_compiler = str(self.settings.compiler)
+        if build_compiler == 'Visual Studio':
             compiler = 'vs' + str(self.settings.compiler.version)
-        else:
+        elif build_compiler in ['gcc', 'clang']:
             compiler = 'gcc'
-        if self.settings.os == 'Windows':
+        else:
+            raise ConanInvalidConfiguration("Unsupported compiler '{}'.".format(build_compiler))
+
+        build_os = str(self.settings.os)
+        if build_os == 'Windows':
             os_name = 'win32' if self.settings.arch == 'x86' else 'win64'
-        elif str(self.settings.os) in ['Macos', 'iOS', 'watchOS', 'tvOS']:
+        elif build_os in ['Macos', 'iOS', 'watchOS', 'tvOS']:
             os_name = 'darwin11'
-        elif self.settings.os == 'Linux':
+        elif build_os == 'Linux':
             os_name = 'linux'
-        elif self.settings.os == 'Solaris':
+        elif build_os == 'Solaris':
             os_name = 'solaris'
-        elif self.settings.os == 'Android':
+        elif build_os == 'Android':
             os_name = 'android'
         target = "%s-%s-%s" % (arch, os_name, compiler)
         args.append('--target=%s' % target)
         if self.settings.compiler == 'apple-clang':
             if float(str(self.settings.compiler.version)) < 8.0:
                 args.append('--disable-avx512')
-        with tools.vcvars(self.settings):
+        with tools.vcvars(self.settings) if self.settings.compiler == 'Visual Studio' else tools.no_op():
             env_build = AutoToolsBuildEnvironment(self, win_bash=win_bash)
             env_build.configure(args=args, configure_dir=self._source_subfolder, host=False, build=False, target=False)
         return env_build
 
     def build(self):
         self._fix_sources()
-        with tools.vcvars(self.settings):
+        with tools.vcvars(self.settings) if self.settings.compiler == 'Visual Studio' else tools.no_op():
             env_build = self._configure_autotools()
             env_build.make()
 
@@ -176,7 +180,7 @@ class LibVPXConan(ConanFile):
             env_build.install()
 
         self.copy(pattern="LICENSE", src='sources', dst='licenses')
-        if self.settings.os == 'Windows':
+        if self.settings.os == 'Windows' and self.settings.compiler == 'Visual Studio':
             name = 'vpxmt.lib' if 'MT' in str(self.settings.compiler.runtime) else 'vpxmd.lib'
             if self.settings.arch == 'x86_64':
                 libdir = os.path.join(self.package_folder, 'lib', 'x64')

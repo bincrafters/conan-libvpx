@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, CMake, tools, RunEnvironment
 import os
 
@@ -14,6 +12,8 @@ class TestPackageConan(ConanFile):
         cmake.build()
 
     def test(self):
+        if tools.cross_building(self.settings):
+            return
         with tools.environment_append(RunEnvironment(self).vars):
             bin_path = os.path.join("bin", "test_package")
             if self.settings.os == "Windows":
