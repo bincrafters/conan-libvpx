@@ -142,7 +142,7 @@ class LibVPXConan(ConanFile):
         build_compiler = str(self.settings.compiler)
         if build_compiler == 'Visual Studio':
             compiler = 'vs' + str(self.settings.compiler.version)
-        elif build_compiler in ['gcc', 'clang']:
+        elif build_compiler in ['gcc', 'clang', 'apple-clang']:
             compiler = 'gcc'
         else:
             raise ConanInvalidConfiguration("Unsupported compiler '{}'.".format(build_compiler))
