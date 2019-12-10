@@ -33,8 +33,8 @@ class LibVPXConan(ConanFile):
 
     def build_requirements(self):
         self.build_requires('yasm/1.3.0')
-        if tools.os_info.is_windows and "CONAN_BASH_PATH" not in os.environ:
-            self.build_requires("msys2/20161025")
+        if tools.os_info.is_windows and "CYGWIN" not in os.environ:
+            self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
     def source(self):
         source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
@@ -142,7 +142,7 @@ class LibVPXConan(ConanFile):
         build_compiler = str(self.settings.compiler)
         if build_compiler == 'Visual Studio':
             compiler = 'vs' + str(self.settings.compiler.version)
-        elif build_compiler in ['gcc', 'clang']:
+        elif build_compiler in ['gcc', 'clang', 'apple-clang']:
             compiler = 'gcc'
         else:
             raise ConanInvalidConfiguration("Unsupported compiler '{}'.".format(build_compiler))
