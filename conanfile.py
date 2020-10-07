@@ -37,8 +37,7 @@ class LibVPXConan(ConanFile):
             self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
     def source(self):
-        source_url = "https://github.com/webmproject/libvpx/archive/v%s.tar.gz" % self.version
-        tools.get(source_url, sha256="86df18c694e1c06cc8f83d2d816e9270747a0ce6abe316e93a4f4095689373f6")
+        tools.get(**self.conan_data["sources"][self.version])
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self._source_subfolder)
 
